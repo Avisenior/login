@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>מתחברים למערכת הלמידה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0A0A0A; --card:#141414; --card2:#1B1B1B; --ink:#F5F3EE; --dim:rgba(245,243,238,.68); --dim2:rgba(245,243,238,.45);
+      --line:rgba(245,243,238,.12); --or:#FF6A00; --or2:#FF8A3D; --ok:#F5F3EE; --err:#FF8A7A;
+      --r:22px;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    html { background:var(--bg); }
+    body { min-height:100vh; background:
+        radial-gradient(ellipse 90% 40% at 50% 0%, rgba(255,106,0,.16), rgba(255,106,0,0) 70%),
+        var(--bg);
+      color:var(--ink); font-family:"Rubik",system-ui,sans-serif; font-size:17px; line-height:1.5; }
+    .wrap { max-width:480px; margin:0 auto; padding:28px 16px calc(40px + env(safe-area-inset-bottom)); }
+    button { font:inherit; color:inherit; border:0; background:none; cursor:pointer; }
+
+    /* header */
+    .chip { display:inline-block; font-size:14px; font-weight:700; color:var(--bg); background:var(--or); padding:4px 12px; border-radius:8px; }
+    h1 { margin-top:14px; font-size:32px; line-height:1.15; font-weight:900; }
+    h1 em { font-style:normal; color:var(--or); }
+    .lead { margin-top:8px; color:var(--dim); font-size:17px; }
+
+    /* video card */
+    .video { position:relative; display:flex; align-items:center; gap:16px; width:100%; margin-top:22px; padding:16px; border-radius:var(--r);
+      background:linear-gradient(135deg,#1d1208,#141414 60%); border:1.5px solid rgba(255,106,0,.45); text-align:right; }
+    .video .play { flex:none; width:64px; height:64px; border-radius:50%; background:var(--or); display:grid; place-items:center;
+      box-shadow:0 0 0 0 rgba(255,106,0,.55); animation:pulse 2.2s infinite; }
+    .video .play svg { width:26px; height:26px; margin-right:-4px; }
+    .video b { display:block; font-size:20px; font-weight:700; }
+    .video span { display:block; color:var(--dim); font-size:15px; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,106,0,.5)} 70%{box-shadow:0 0 0 16px rgba(255,106,0,0)} 100%{box-shadow:0 0 0 0 rgba(255,106,0,0)} }
+
+    /* steps */
+    .step { margin-top:18px; padding:20px 18px; border-radius:var(--r); background:var(--card); border:1px solid var(--line); }
+    .step h2 { display:flex; align-items:center; gap:10px; font-size:20px; font-weight:700; }
+    .step h2 i { flex:none; width:30px; height:30px; border-radius:50%; background:var(--or); color:var(--bg); font-style:normal; font-weight:900; font-size:16px; display:grid; place-items:center; }
+    .step p.note { margin-top:6px; color:var(--dim); font-size:15px; }
+
+    .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:60px; margin-top:14px; border-radius:999px;
+      background:var(--or); color:var(--bg); font-weight:900; font-size:21px; text-decoration:none; transition:transform .1s, background .2s; }
+    .btn:active { transform:scale(.97); }
+    .btn svg { width:24px; height:24px; }
+    .btn.ghost { background:transparent; color:var(--ink); border:1.5px solid var(--line); font-weight:700; font-size:18px; min-height:54px; }
+    .stores { display:none; gap:10px; }
+    .stores .btn { margin-top:14px; }
+    .show-both .stores { display:flex; } .show-both #dlMain { display:none; }
+
+    label.fl { display:block; margin-top:14px; font-size:15px; color:var(--dim); }
+    input.name { display:block; width:100%; margin-top:6px; height:60px; padding:0 18px; border-radius:16px; background:var(--card2);
+      border:1.5px solid var(--line); color:var(--ink); font:inherit; font-size:21px; font-weight:500; outline:none; }
+    input.name:focus { border-color:var(--or); }
+    input.name::placeholder { color:var(--dim2); font-weight:400; }
+    .btn[disabled] { opacity:.6; }
+    .msg { margin-top:12px; font-size:16px; color:var(--err); display:none; }
+    .msg.on { display:block; }
+
+    .rows { display:none; margin-top:16px; }
+    .rows.on { display:block; }
+    .who { font-size:15px; color:var(--dim); margin-bottom:8px; }
+    .row { display:flex; align-items:center; gap:12px; margin-top:10px; padding:12px 12px 12px 14px; border-radius:16px; background:var(--card2); border:1px solid var(--line); }
+    .row .txt { flex:1; min-width:0; }
+    .row .l { font-size:14px; color:var(--dim); }
+    .row .v { direction:ltr; text-align:right; font-size:19px; font-weight:700; overflow-wrap:anywhere; user-select:all; }
+    .copy { flex:none; display:flex; align-items:center; gap:6px; height:48px; padding:0 18px; border-radius:999px; background:var(--or); color:var(--bg); font-weight:900; font-size:17px; }
+    .copy svg { width:20px; height:20px; }
+    .copy.done { background:var(--ok); }
+    .group + .group { margin-top:18px; padding-top:14px; border-top:1px dashed var(--line); }
+
+    ol.how { margin-top:10px; padding-right:20px; color:var(--dim); font-size:16px; }
+    ol.how li { margin-top:6px; }
+    ol.how b { color:var(--ink); }
+    .foot { margin-top:26px; text-align:center; color:var(--dim2); font-size:14px; }
+
+    /* toast */
+    .toast { position:fixed; left:50%; bottom:calc(22px + env(safe-area-inset-bottom)); transform:translate(-50%,20px); opacity:0; pointer-events:none;
+      background:var(--ink); color:var(--bg); font-weight:700; padding:12px 22px; border-radius:999px; transition:.25s; z-index:30; white-space:nowrap; }
+    .toast.on { opacity:1; transform:translate(-50%,0); }
+
+    /* video modal */
+    .modal { position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.93);
+      padding:calc(70px + env(safe-area-inset-top)) 12px calc(20px + env(safe-area-inset-bottom)); }
+    .modal.on { display:flex; }
+    .player { position:relative; height:100%; max-height:calc(100vh - 110px); aspect-ratio:9/16; max-width:100%; border-radius:18px; overflow:hidden; background:#000; }
+    .player iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .close { position:fixed; top:calc(14px + env(safe-area-inset-top)); left:14px; z-index:60; display:flex; align-items:center; gap:8px;
+      height:48px; padding:0 18px 0 14px; border-radius:999px; background:var(--ink); color:var(--bg); font-weight:700; font-size:17px; }
+    .close svg { width:22px; height:22px; }
+    body.lock { overflow:hidden; }
+
+    @media (prefers-reduced-motion: reduce) { .video .play { animation:none; } .toast { transition:none; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <span class="chip">מדריך מהיר</span>
+    <h1>מתחברים למערכת <em>הלמידה החדשה</em></h1>
+    <p class="lead">שלושה צעדים, פחות מדקה.</p>
+
+    <button class="video" id="openVideo" type="button" aria-haspopup="dialog">
+      <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="#0A0A0A"/></svg></span>
+      <span><b>צפו בסרטון ההסבר</b><span>45 שניות · מראה בדיוק מה ללחוץ</span></span>
+    </button>
+
+    <!-- STEP 1 : download -->
+    <section class="step" id="stepDl">
+      <h2><i>1</i>מורידים את האפליקציה</h2>
+      <a class="btn" id="dlMain" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12M6.5 10L12 15.5L17.5 10" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h16" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round"/></svg>
+        הורדת האפליקציה
+      </a>
+      <div class="stores">
+        <a class="btn ghost" id="dlIos" href="https://apps.apple.com/il/app/id970204620" target="_blank" rel="noopener">אייפון</a>
+        <a class="btn ghost" id="dlAnd" href="https://play.google.com/store/apps/details?id=com.csod.learning" target="_blank" rel="noopener">אנדרואיד</a>
+      </div>
+      <p class="note">האפליקציה נקראת <b>Cornerstone</b>. בחנות לוחצים "הורדה" או "התקנה".</p>
+    </section>
+
+    <!-- STEP 2 : details -->
+    <section class="step" id="stepDetails">
+      <h2><i>2</i>הפרטים שלכם להתחברות</h2>
+      <form id="lookup" autocomplete="off" novalidate>
+        <label class="fl" for="fullName">שם מלא (שם פרטי ושם משפחה)</label>
+        <input class="name" id="fullName" name="fullName" type="text" inputmode="text" enterkeyhint="search" placeholder="למשל: ישראל ישראלי" />
+        <button class="btn" id="showBtn" type="submit">הצג פרטים</button>
+      </form>
+      <p class="msg" id="msg" role="alert"></p>
+      <div class="rows" id="rows" aria-live="polite"></div>
+    </section>
+
+    <!-- STEP 3 : paste -->
+    <section class="step">
+      <h2><i>3</i>פותחים את האפליקציה ומדביקים</h2>
+      <ol class="how">
+        <li><b>כתובת פורטל</b> ← לוחצים על החץ הכתום</li>
+        <li><b>שם משתמש</b> ← "הבא"</li>
+        <li><b>סיסמה</b> ← "היכנס"</li>
+        <li>"להישאר מחובר?" ← <b>כן</b>, ומאשרים זיהוי פנים והתראות</li>
+        <li>בסוף לוחצים על <b>"הלמידה שלי"</b> בתחתית המסך</li>
+      </ol>
+    </section>
+
+    <p class="foot">צריכים עזרה? פנו למנהל הישיר.</p>
+  </main>
+
+  <div class="toast" id="toast">הועתק ✓</div>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="סרטון הסבר">
+    <button class="close" id="closeVideo" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round"/></svg>סגירה
+    </button>
+    <div class="player" id="player"></div>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    const VIDEO_ID = "D_UzxZVSX00";
+    const PORTAL = "upsil.csod.com";
+    const IOS_URL = "https://apps.apple.com/il/app/id970204620";
+    const AND_URL = "https://play.google.com/store/apps/details?id=com.csod.learning";
+
+    // ---------- download button: right store per device ----------
+    (function () {
+      const ua = navigator.userAgent || "";
+      const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const isAnd = /Android/i.test(ua);
+      const main = document.getElementById("dlMain");
+      if (isIOS) main.href = IOS_URL;
+      else if (isAnd) main.href = AND_URL;
+      else document.getElementById("stepDl").classList.add("show-both");
+    })();
+
+    // ---------- video modal (plays in-page, closable at any time) ----------
+    const modal = document.getElementById("modal"), player = document.getElementById("player");
+    let pushed = false;
+    function openVideo() {
+      player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${VIDEO_ID}?autoplay=1&playsinline=1&rel=0&modestbranding=1" title="סרטון הסבר" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      modal.classList.add("on"); document.body.classList.add("lock");
+      history.pushState({ video: 1 }, ""); pushed = true;
+      document.getElementById("closeVideo").focus();
+    }
+    function closeVideo(fromPop) {
+      if (!modal.classList.contains("on")) return;
+      player.innerHTML = "";                       // stops playback
+      modal.classList.remove("on"); document.body.classList.remove("lock");
+      if (pushed && !fromPop) { pushed = false; history.back(); } else pushed = false;
+      document.getElementById("openVideo").focus();
+    }
+    document.getElementById("openVideo").addEventListener("click", openVideo);
+    document.getElementById("closeVideo").addEventListener("click", () => closeVideo(false));
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeVideo(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeVideo(false); });
+    window.addEventListener("popstate", () => closeVideo(true));   // phone "back" closes the video
+
+    // ---------- lookup: name → decrypt this employee's record ----------
+    // normalize() must match tools/build_data.py exactly
+    function normalize(name) {
+      let s = String(name || "").normalize("NFKC");
+      s = s.replace(/[֑-ׇ]/g, "");
+      s = s.replace(/[׳״'"`‘’“”´]/g, "");
+      s = s.replace(/[-־_.,]/g, " ");
+      s = s.replace(/[ךםןףץ]/g, (c) => ({ "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" })[c]).toLowerCase();
+      return s.replace(/\s+/g, " ").trim();
+    }
+    const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+    const hex = (u8) => Array.from(u8, (b) => b.toString(16).padStart(2, "0")).join("");
+
+    async function tryName(norm) {
+      const D = window.CS_DATA;
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(norm), "PBKDF2", false, ["deriveBits"]);
+      const bits = new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: b64(D.salt), iterations: D.iter }, base, 512));
+      const rec = D.r[hex(bits.slice(0, 16))];
+      if (!rec) return null;
+      const key = await crypto.subtle.importKey("raw", bits.slice(32), "AES-GCM", false, ["decrypt"]);
+      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(rec[0]) }, key, b64(rec[1]));
+      return JSON.parse(new TextDecoder().decode(pt));
+    }
+    function candidates(norm) {
+      const w = norm.split(" "), out = [norm];
+      if (w.length > 1) {
+        out.push([...w].reverse().join(" "));                 // "family first"
+        out.push([...w.slice(1), w[0]].join(" "));            // first name moved to the end
+        out.push([w[w.length - 1], ...w.slice(0, -1)].join(" "));
+      }
+      return [...new Set(out)];
+    }
+
+    const COPY_SVG = '<svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="2.5" stroke="currentColor" stroke-width="2.4"/><path d="M16 5.5V5a1.5 1.5 0 0 0-1.5-1.5H5A1.5 1.5 0 0 0 3.5 5v9.5A1.5 1.5 0 0 0 5 16h.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const row = (label, val) => `<div class="row"><div class="txt"><div class="l">${label}</div><div class="v">${esc(val)}</div></div><button class="copy" type="button" data-v="${esc(val)}">${COPY_SVG}העתק</button></div>`;
+
+    const form = document.getElementById("lookup"), input = document.getElementById("fullName");
+    const btn = document.getElementById("showBtn"), msg = document.getElementById("msg"), rows = document.getElementById("rows");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      input.blur();
+      msg.classList.remove("on"); rows.classList.remove("on"); rows.innerHTML = "";
+      const norm = normalize(input.value);
+      if (norm.split(" ").length < 2) { msg.textContent = "כתבו שם פרטי ושם משפחה."; msg.classList.add("on"); return; }
+      if (!window.CS_DATA || !(crypto && crypto.subtle)) { msg.textContent = "הדף לא נטען כמו שצריך. רעננו ונסו שוב."; msg.classList.add("on"); return; }
+      btn.disabled = true; btn.textContent = "מחפש…";
+      let found = null;
+      try { for (const c of candidates(norm)) { found = await tryName(c); if (found) break; } } catch (err) { found = null; }
+      btn.disabled = false; btn.textContent = "הצג פרטים";
+      if (!found) { msg.textContent = "לא מצאנו את השם. בדקו את האיות (כמו שהוא רשום בעבודה), או פנו למנהל."; msg.classList.add("on"); return; }
+      rows.innerHTML = found.map((it, i) =>
+        `<div class="group">${found.length > 1 ? `<div class="who">חשבון ${i + 1} מתוך ${found.length}</div>` : ""}${row("כתובת פורטל", PORTAL)}${row("שם משתמש", it.u)}${row("סיסמה", it.p)}</div>`
+      ).join("");
+      rows.classList.add("on");
+      rows.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    // ---------- copy buttons ----------
+    const toast = document.getElementById("toast"); let tt;
+    async function copyText(t) {
+      try { await navigator.clipboard.writeText(t); return true; }
+      catch (e) {
+        const ta = document.createElement("textarea"); ta.value = t; ta.setAttribute("readonly", "");
+        ta.style.cssText = "position:fixed;top:0;left:0;opacity:0"; document.body.appendChild(ta);
+        ta.select(); ta.setSelectionRange(0, t.length);
+        let ok = false; try { ok = document.execCommand("copy"); } catch (_) {}
+        ta.remove(); return ok;
+      }
+    }
+    rows.addEventListener("click", async (e) => {
+      const b = e.target.closest(".copy"); if (!b) return;
+      const ok = await copyText(b.dataset.v);
+      rows.querySelectorAll(".copy.done").forEach((x) => { x.classList.remove("done"); x.innerHTML = COPY_SVG + "העתק"; });
+      if (ok) { b.classList.add("done"); b.textContent = "הועתק ✓"; }
+      toast.textContent = ok ? "הועתק ✓ עכשיו מדביקים באפליקציה" : "לא הצלחנו להעתיק. סמנו את הטקסט והעתיקו ידנית.";
+      toast.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("on"), 2200);
+    });
+  </script>
+</body>
+</html>
